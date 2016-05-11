@@ -11,7 +11,7 @@ def is_number(s):
         float(s)
         return True
     except ValueError:
-         pass
+        pass
     try:
         import unicodedata
         unicodedata.numeric(s)
@@ -36,7 +36,7 @@ def set(coord, item):
             return("set %s value n %s" % (coord, item[1:]))
         return("set %s text t %s" %item)
 
-def ss_to_xy(s: str):
+def ss_to_xy(s):
     """convert spreadsheet coordinates to zero-index xy coordinates.
     return None if input is invalid"""
     result = re.match(r'\$*([A-Z]+)\$*([0-9]+)', s, re.I)
@@ -52,7 +52,7 @@ def ss_to_xy(s: str):
     y = int(result.group(2))-1
     return (x,y)
 
-def _grid_size(cells: dict):
+def _grid_size(cells):
     maxx = -1
     maxy = -1
     for k, v in cells.items():
@@ -64,33 +64,33 @@ def _grid_size(cells: dict):
 class EtherCalc(object):
     def __init__(self, url_root):
         self.root = url_root
-    def get(self, cmd: str):
+    def get(self, cmd):
         r = requests.get(self.root + "/_" +cmd)
         r.raise_for_status()
         return r
-    def post(self, id: str, data, content_type: str):
+    def post(self, id, data, content_type):
         r = requests.post(self.root + "/_" + id,
                           data=data,
                           headers={"Content-Type" : content_type})
         r.raise_for_status()
         return r
-    def put(self, id: str, data, content_type: str):
+    def put(self, id, data, content_type):
         r = requests.put(self.root + "/_" + id,
                           data=data,
                           headers={"Content-Type" : content_type})
         r.raise_for_status()
         return r
-    def cells(self, page: str, coord=None):
+    def cells(self, page, coord=None):
         api = ("/%s/cells" % page)
         if coord != None:
             api = api + "/" + coord
         return self.get(api).json()
-    def command(self, page: str, command):
+    def command(self, page, command):
         r = requests.post(self.root + "/_/%s" % page,
                           json = {"command" : command})
         r.raise_for_status()
         return r.json()
-    def create(self, data, format: str="python", id=None):
+    def create(self, data, format="python", id=None):
         if id == None:
             id = ""
         else:
@@ -106,7 +106,7 @@ class EtherCalc(object):
             return self.post(id, data, "text/x-socialcalc")
         elif format == "excel":
             return self.post(id, data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    def update(self, data, format: str="python", id=None):
+    def update(self, data, format="python", id=None):
         if id == None:
             sid = ""
         else:
@@ -165,7 +165,7 @@ class EtherCalc(object):
 if __name__ == "__main__":
     import pprint
     pp = pprint.PrettyPrinter(indent=4)
-    e = Ethercalc("http://localhost:8000")
+    e = EtherCalc("http://localhost:8000")
     pp.pprint(e.cells("test"))
     pp.pprint(e.cells("test", "A1"))
     pp.pprint(e.export("test"))
