@@ -62,22 +62,29 @@ def _grid_size(cells):
     return (maxx + 1, maxy+1)
 
 class EtherCalc(object):
-    def __init__(self, url_root):
+    verify = True
+    
+    def __init__(self, url_root, verify=True):
         self.root = url_root
+        self.verify = verify
+        
     def get(self, cmd):
-        r = requests.get(self.root + "/_" +cmd)
+        r = requests.get(self.root + "/_" +cmd
+                         , verify=self.verify)
         r.raise_for_status()
         return r
     def post(self, id, data, content_type):
         r = requests.post(self.root + "/_" + id,
                           data=data,
-                          headers={"Content-Type" : content_type})
+                          headers={"Content-Type" : content_type},
+                          verify=self.verify)
         r.raise_for_status()
         return r
     def put(self, id, data, content_type):
         r = requests.put(self.root + "/_" + id,
                           data=data,
-                          headers={"Content-Type" : content_type})
+                          headers={"Content-Type" : content_type},
+                          verify=self.verify)
         r.raise_for_status()
         return r
     def cells(self, page, coord=None):
@@ -87,7 +94,8 @@ class EtherCalc(object):
         return self.get(api).json()
     def command(self, page, command):
         r = requests.post(self.root + "/_/%s" % page,
-                          json = {"command" : command})
+                          json = {"command" : command},
+                          verify=self.verify)
         r.raise_for_status()
         return r.json()
     def create(self, data, format="python", id=None):
